@@ -4,7 +4,7 @@ CRA
 
 Socket.io
 
-![alt text](./public/img/ScreenShot.png)
+![alt text](./public/img/screen.png)
 
 ## Available Scripts:
 
