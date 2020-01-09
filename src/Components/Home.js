@@ -1,21 +1,45 @@
 import React, { Component } from "react";
 import Layout from "../Layouts/Layout";
-import openSocket from "socket.io-client";
 import Cookies from "js-cookie";
 import { Link } from "react-router-dom";
+import ChatList from "./ChatList";
 class Home extends Component {
-  componentDidMount() {
-    openSocket("http://localhost:8000");
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: false,
+      callback_message: false
+    };
   }
+
+  componentDidMount() {
+    if (Cookies.get("AuthId") !== undefined) {
+    } else {
+      this.props.history.push("/signin");
+    }
+  }
+
   render() {
     return (
       <Layout>
         <div className="row">
-          <div className="col-md-8 offset-md-2">
+          <div className="col-md-12">
             <div className="card">
               <div className="card-body">
                 {Cookies.get("AuthId") != null ? (
-                  <h4>Chat Room</h4>
+                  <div className="container">
+                    <div className="messaging">
+                      <div className="inbox_msg">
+                        <div className="inbox_people">
+                          <ChatList />
+                        </div>
+                        <div className="mesgs">
+                          <h6>Welcome To Chat </h6>
+                          <h6>Select user to start chat</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <ul>
                     <li>

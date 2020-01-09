@@ -1,2 +1,20 @@
 import { signinUser, signupUser, logoutUser } from "./auth";
-export { signinUser, signupUser, logoutUser };
+import {
+  GetChatList,
+  GetCurrentUser,
+  GetChat,
+  PostNewMessage,
+  GetContactInfo
+} from "./chat";
+export {
+  // Auth
+  signinUser,
+  signupUser,
+  logoutUser,
+  //  Chat
+  GetChatList,
+  GetCurrentUser,
+  GetChat,
+  PostNewMessage,
+  GetContactInfo
+};

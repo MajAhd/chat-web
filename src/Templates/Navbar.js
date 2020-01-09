@@ -14,6 +14,7 @@ const Navbar = props => {
   useEffect(() => {
     if ("auth_logout" in ProfileLogout) {
       Cookies.remove("AuthId");
+      Cookies.remove("User");
       window.location.reload();
     }
   }, [ProfileLogout]);

@@ -4,6 +4,8 @@ CRA
 
 Socket.io
 
+![alt text](./public/img/ScreenShot.png)
+
 ## Available Scripts:
 
 `npm install`
@@ -23,11 +25,8 @@ Socket.io
 
 - Uer Auth With Phone Number & Email
 - Unique User Name
-- Profile
 - Peer To Peer Chat
 - Attach Photo && Movies && File
-- Group Chat
-- Channel
 - Contacts
 
 ### Chat Api
