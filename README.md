@@ -26,7 +26,7 @@ Socket.io
 - User Auth With Phone Number & Email
 - Unique User Name
 - Peer To Peer Chat
-- Attach Photo && Movies && File
+- Attach Photo && Movies File
 - Contacts
 
 ### Chat Api
@@ -39,4 +39,4 @@ Git :
 
 ### Desktop Application
 
-Git :
+Git : https://github.com/MajAhd/chat-desktop.git
