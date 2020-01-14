@@ -40,6 +40,19 @@ export function GetChat(user_id, contact_id, access_token) {
     payload: request
   };
 }
+export function GetContactInfo(contact_id, access_token) {
+  const request = axios
+    .get(ChatApi + "/contactInfo/" + contact_id, {
+      headers: {
+        Authorization: access_token
+      }
+    })
+    .then(response => response.data);
+  return {
+    type: "Get_Contact_Info",
+    payload: request
+  };
+}
 
 export function PostNewMessage(user_id, contact_id, message, access_token) {
   const request = axios
@@ -62,17 +75,31 @@ export function PostNewMessage(user_id, contact_id, message, access_token) {
     payload: request
   };
 }
+export function PostNewMediaMessage(
+  user_id,
+  contact_id,
+  message,
+  imageFile,
+  FileType,
+  access_token
+) {
+  var data = new FormData();
+  data.append("media", imageFile, "MessageImage");
+  data.append("sender_id", user_id);
+  data.append("reciever_id", contact_id);
+  data.append("message", message);
+  data.append("type", FileType);
 
-export function GetContactInfo(contact_id, access_token) {
   const request = axios
-    .get(ChatApi + "/contactInfo/" + contact_id, {
+    .post(ChatApi + "/send/media", data, {
       headers: {
+        Accept: "application/json",
         Authorization: access_token
       }
     })
     .then(response => response.data);
   return {
-    type: "Get_Contact_Info",
+    type: "Post_New_Media_Message",
     payload: request
   };
 }

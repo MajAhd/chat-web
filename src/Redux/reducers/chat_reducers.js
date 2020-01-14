@@ -10,6 +10,8 @@ export default function(state = {}, action) {
       return { ...state, chats: action.payload };
     case "Post_New_Message":
       return { ...state, chat_send: action.payload };
+    case "Post_New_Media_Message":
+      return { ...state, chat_send: action.payload };
     default:
       return state;
   }

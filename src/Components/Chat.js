@@ -6,11 +6,19 @@ import Cookies from "js-cookie";
 import { Link } from "react-router-dom";
 import openSocket from "socket.io-client";
 import moment from "moment";
+
 // Redux
 import { connect } from "react-redux";
-import { GetChat, PostNewMessage, GetContactInfo } from "../Redux/actions";
+import {
+  GetChat,
+  PostNewMessage,
+  PostNewMediaMessage,
+  GetContactInfo
+} from "../Redux/actions";
 import { bindActionCreators } from "redux";
 import Aux from "../HOC/Aux";
+import { mainApi } from "../Redux/ApiConfig";
+
 class Chat extends Component {
   constructor(props) {
     super(props);
@@ -181,6 +189,100 @@ class Chat extends Component {
         });
       });
   }
+  fileChangedHandler = event => {
+    let FileType = event.target.files[0].type;
+    let selectedFile = event.target.files[0];
+
+    if (
+      FileType === "image/png" ||
+      FileType === "image/jpg" ||
+      FileType === "image/jpeg"
+    ) {
+      this.setState({
+        selectedFile: selectedFile,
+        FileType: "IMAGE"
+      });
+      let reader = new FileReader();
+      reader.onloadend = () => {
+        this.setState({
+          previewUrl: reader.result,
+          previewSource: true
+        });
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    } else if (FileType === "video/mp4" || FileType === "video/mp4") {
+      this.setState({
+        selectedFile: selectedFile,
+        FileType: "MOVIE"
+      });
+      let reader = new FileReader();
+      reader.onloadend = () => {
+        this.setState({
+          previewUrl: reader.result,
+          previewSource: true
+        });
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    } else {
+      this.setState({
+        selectedFile: false,
+        FileType: false
+      });
+    }
+  };
+  send_media_message() {
+    if (this.state.selectedFile) {
+      this.setState({
+        sendLoading: true,
+        validations: false,
+        callback_message: false
+      });
+
+      this.props
+        .PostNewMediaMessage(
+          this.state.user_id,
+          this.state.contact_id,
+          this.state.message,
+          this.state.selectedFile,
+          this.state.FileType,
+          Cookies.get("AuthId")
+        )
+        .then(() => {
+          const httpCallback = this.props.chat.chat_send;
+          if ("validations" in httpCallback) {
+            this.setState({
+              sendLoading: false,
+              callback_message: false,
+              validations: httpCallback.validations
+            });
+          } else if ("result" in httpCallback) {
+            if (httpCallback["result"] === false) {
+              this.setState({
+                sendLoading: false,
+                callback_message: httpCallback["msg"],
+                validations: false
+              });
+            } else {
+              // Socket Read Latest Post!
+              this.setState({
+                sendLoading: false,
+                callback_message: false,
+                validations: false,
+                message: "",
+                selectedFile: false
+              });
+            }
+          }
+        })
+        .catch(err => {
+          this.setState({
+            sendLoading: false,
+            callback_message: "server Error!Try Again...",
+            validations: false
+          });
+        });
+    }
+  }
   render() {
     return (
       <Layout>
@@ -208,6 +310,34 @@ class Chat extends Component {
                                   >
                                     <div className="sent_msg">
                                       <p className="shadow rounded">
+                                        {msg.media !== null ? (
+                                          msg.media_type === "IMAGE" ? (
+                                            <img
+                                              src={mainApi + "/" + msg.media}
+                                              className="img-thumbnail"
+                                              style={{
+                                                height: 300,
+                                                width: "100%"
+                                              }}
+                                              alt="Send Message"
+                                            />
+                                          ) : (
+                                            <video
+                                              style={{
+                                                height: 350,
+                                                width: "100%"
+                                              }}
+                                              controls
+                                            >
+                                              <source
+                                                src={mainApi + "/" + msg.media}
+                                                type="video/mp4"
+                                              ></source>
+                                              Your browser does not support the
+                                              video tag.
+                                            </video>
+                                          )
+                                        ) : null}
                                         {msg.message}
                                       </p>
                                       <span className="time_date">
@@ -242,6 +372,36 @@ class Chat extends Component {
                                           </Aux>
                                         </h6>
                                         <p className="shadow rounded">
+                                          {msg.media !== null ? (
+                                            msg.media_type === "IMAGE" ? (
+                                              <img
+                                                src={mainApi + "/" + msg.media}
+                                                className="img-thumbnail"
+                                                style={{
+                                                  height: 300,
+                                                  width: "100%"
+                                                }}
+                                                alt="Send Message"
+                                              />
+                                            ) : (
+                                              <video
+                                                style={{
+                                                  height: 350,
+                                                  width: "100%"
+                                                }}
+                                                controls
+                                              >
+                                                <source
+                                                  src={
+                                                    mainApi + "/" + msg.media
+                                                  }
+                                                  type="video/mp4"
+                                                ></source>
+                                                Your browser does not support
+                                                the video tag.
+                                              </video>
+                                            )
+                                          ) : null}
                                           {msg.message}
                                         </p>
                                         <span className="time_date">
@@ -261,9 +421,11 @@ class Chat extends Component {
                             <div className="input_msg_write">
                               <textarea
                                 type="text"
-                                className="form-control w-100"
+                                className="form-control"
                                 placeholder="Type a message"
                                 value={this.state.message}
+                                style={{ paddingRight: 100 }}
+                                rows="3"
                                 onChange={e => {
                                   this.setState({
                                     message: e.target.value
@@ -273,19 +435,120 @@ class Chat extends Component {
                               {this.state.sendLoading ? (
                                 <Spinner type="text-info" />
                               ) : (
-                                <button
-                                  className="btn msg_send_btn"
-                                  type="button"
-                                  onClick={() => {
-                                    this.send_message();
-                                  }}
-                                >
-                                  <i
-                                    className="fa fa-paper-plane-o"
-                                    aria-hidden="true"
-                                  ></i>
-                                </button>
+                                <Aux>
+                                  {/*  msg_send_btn */}
+                                  <button
+                                    className="btn msg_send_btn"
+                                    type="button"
+                                    onClick={() => {
+                                      this.send_message();
+                                    }}
+                                  >
+                                    <i
+                                      className="fa fa-paper-plane-o"
+                                      aria-hidden="true"
+                                    ></i>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn   attach_send_btn"
+                                    data-toggle="modal"
+                                    data-target="#SendMediaModal"
+                                  >
+                                    <i className="material-icons">
+                                      attach_file
+                                    </i>
+                                  </button>
+                                </Aux>
                               )}
+                            </div>
+                          </div>
+                          {/* Send Media Modal */}
+                          <div
+                            className="modal fade"
+                            id="SendMediaModal"
+                            tabIndex="-1"
+                            role="dialog"
+                            aria-labelledby="SendMediaModalLabel"
+                            aria-hidden="true"
+                          >
+                            <div className="modal-dialog" role="document">
+                              <div className="modal-content">
+                                <div className="modal-header">
+                                  <h5
+                                    className="modal-title"
+                                    id="exampleModalLabel"
+                                  >
+                                    Send Media : Image Or Movie
+                                  </h5>
+                                  <button
+                                    type="button"
+                                    className="close"
+                                    data-dismiss="modal"
+                                    aria-label="Close"
+                                  >
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div className="modal-body text-center">
+                                  <input
+                                    type="file"
+                                    required
+                                    className="form-control"
+                                    placeholder="Send Image"
+                                    onChange={this.fileChangedHandler}
+                                  ></input>
+                                  {this.state.previewSource ? (
+                                    this.state.FileType === "IMAGE" ? (
+                                      <div className="image-container">
+                                        <img
+                                          src={this.state.previewUrl}
+                                          className="img-thumbnail"
+                                          style={{ height: 300, width: 300 }}
+                                          alt="Send Message"
+                                        />
+                                      </div>
+                                    ) : (
+                                      <div className="image-container">
+                                        <video
+                                          width="450"
+                                          height="300"
+                                          controls
+                                        >
+                                          <source
+                                            src={this.state.previewUrl}
+                                            type="video/mp4"
+                                          ></source>
+                                          Your browser does not support the
+                                          video tag.
+                                        </video>
+                                      </div>
+                                    )
+                                  ) : null}
+                                  <textarea
+                                    type="text"
+                                    className="form-control w-100"
+                                    placeholder="Type a message"
+                                    value={this.state.message}
+                                    onChange={e => {
+                                      this.setState({
+                                        message: e.target.value
+                                      });
+                                    }}
+                                  ></textarea>
+                                </div>
+                                <div className="modal-footer">
+                                  <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                    onClick={() => {
+                                      this.send_media_message();
+                                    }}
+                                  >
+                                    Send
+                                  </button>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -318,7 +581,7 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
-    { GetChat, PostNewMessage, GetContactInfo },
+    { GetChat, PostNewMessage, PostNewMediaMessage, GetContactInfo },
     dispatch
   );
 }

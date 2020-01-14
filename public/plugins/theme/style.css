@@ -146,7 +146,7 @@
  }
 
  .received_withd_msg p {
-   background: #a0a0a0 none repeat scroll 0 0;
+   background: #d4d4d4 none repeat scroll 0 0;
    border-radius: 3px;
    color: #000000;
    font-size: 16px;
@@ -174,7 +174,7 @@
  }
 
  .sent_msg p {
-   background: rgb(4, 83, 105) none repeat scroll 0 0;
+   background: rgb(25, 25, 24) none repeat scroll 0 0;
    border-radius: 3px;
    font-size: 16px;
    margin: 0;
@@ -208,7 +208,7 @@
  }
 
  .msg_send_btn {
-   background: rgb(4, 83, 105) none repeat scroll 0 0;
+   background: rgb(25, 25, 24) none repeat scroll 0 0;
    border: medium none;
    border-radius: 50%;
    color: #fff;
@@ -228,4 +228,80 @@
  .msg_history {
    height: 70vh;
    overflow-y: auto;
+ }
+
+ /* Fab Button */
+ .attach_send_btn {
+   background: rgb(25, 25, 24) none repeat scroll 0 0;
+   border: medium none;
+   border-radius: 50%;
+   color: #fff;
+   cursor: pointer;
+   font-size: 25px;
+   height: 50px;
+   position: absolute;
+   right: 0;
+   right: 55px;
+   top: 5px;
+   width: 50px;
+ }
+
+
+ .btn-group-fab {
+   border: medium none;
+   border-radius: 50%;
+   color: #fff;
+   cursor: pointer;
+   font-size: 25px;
+   height: 50px;
+   position: absolute;
+   right: 0;
+   right: 55px;
+   top: 0px;
+   width: 50px;
+ }
+
+
+ .btn-group-fab .btn {
+   position: absolute;
+   bottom: 0;
+   border-radius: 50%;
+   display: block;
+   margin-bottom: 4px;
+   width: 42px;
+   height: 42px;
+ }
+
+ .btn-group-fab .btn-main {
+   width: 50px;
+   height: 50px;
+   right: 50%;
+   margin-right: -25px;
+   z-index: 9;
+ }
+
+ .btn-group-fab .btn-sub {
+   bottom: 0;
+   z-index: 8;
+   right: 50%;
+   margin-right: -20px;
+   -webkit-transition: all 2s;
+   transition: all 0.5s;
+
+ }
+
+ .btn-group-fab.active .btn-sub:nth-child(2) {
+   bottom: 60px;
+ }
+
+ .btn-group-fab.active .btn-sub:nth-child(3) {
+   bottom: 110px;
+ }
+
+ .btn-group-fab.active .btn-sub:nth-child(4) {
+   bottom: 160px;
+ }
+
+ .btn-group-fab .btn-sub:nth-child(5) {
+   bottom: 210px;
  }

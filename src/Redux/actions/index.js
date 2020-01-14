@@ -4,7 +4,8 @@ import {
   GetCurrentUser,
   GetChat,
   PostNewMessage,
-  GetContactInfo
+  GetContactInfo,
+  PostNewMediaMessage
 } from "./chat";
 export {
   // Auth
@@ -16,5 +17,6 @@ export {
   GetCurrentUser,
   GetChat,
   PostNewMessage,
-  GetContactInfo
+  GetContactInfo,
+  PostNewMediaMessage
 };
